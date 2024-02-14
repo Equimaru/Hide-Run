@@ -5,35 +5,16 @@ using UnityEngine;
 public class PlayerAnimator : MonoBehaviour
 {
     [SerializeField] private PlayerMovement player;
-    [SerializeField] private Animator animator;
+    [SerializeField] private Animator playerAnimator;
 
     private string IS_WALKING { get; } = "IsMoving";
     private string IS_RUNNING { get; } = "IsRunning";
-    private string IS_ATTACKING { get; } = "IsAttacking";
-    private string IS_IN__THE_AIR { get; } = "IsInTheAir";
-    //private string HORIZONTAL_LOCAL_MOVEMENT { get; } = "horizontalLocalMovement";
-    //private string VERTICAL_LOCAL_MOVEMENT { get; } = "verticalLocalMovement";
+    private string IS_IN_THE_AIR { get; } = "IsInTheAir";
 
     private void Update()
     {
-        animator.SetBool(IS_WALKING, player.IsMoving());
-        animator.SetBool(IS_RUNNING, player.IsRunning());
-        //animator.SetBool(IS_ATTACKING, player.IsAttacking());
-        //animator.SetFloat(VERTICAL_LOCAL_MOVEMENT, player.InputVector().y);
-        //animator.SetFloat(HORIZONTAL_LOCAL_MOVEMENT, player.InputVector().x);
+        playerAnimator.SetBool(IS_WALKING, player.IsMoving());
+        playerAnimator.SetBool(IS_RUNNING, player.IsRunning());
     }
 
-    public bool AttackAnimationIsPlaying()
-    {
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
-        {
-            return true;
-        }
-        else return false;
-    }
-
-    public void AttackAttemptTriggered()
-    {
-
-    }
 }
