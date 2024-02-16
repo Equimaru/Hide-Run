@@ -7,9 +7,12 @@ public class HunterAnimator : MonoBehaviour
 
     [SerializeField] private HunterMovement hunterMovement;
     [SerializeField] private Animator hunterAnimator;
-    
-    void Update()
+
+    private string IS_RUNNING { get; } = "IsRunning";
+
+
+    private void Update()
     {
-        
+        hunterAnimator.SetBool(IS_RUNNING, hunterMovement.IsRunning());
     }
 }

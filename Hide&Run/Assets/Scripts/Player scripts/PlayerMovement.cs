@@ -16,9 +16,9 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private LayerMask ground;
 
-    private float movementSpeed;
-    private float walkingSpeed = 3f;
-    private float runningSpeed = 6f;
+    private float movementSpeed,
+        walkingSpeed = 4f,
+        runningSpeed = 7f;
 
     private float jumpForce = 2f;
 
@@ -26,14 +26,13 @@ public class PlayerMovement : MonoBehaviour
     private float currentVelocity;
     private float smoothTime = 0.1f;
 
-    private bool isMoving;
-    private bool isRunning;
-
-    private bool isGrounded;
+    private bool isMoving,
+        isRunning,
+        isGrounded;
 
     private Rigidbody rb;
 
-    Vector3 cameraRelativeMoveDir;
+    private Vector3 cameraRelativeMoveDir;
 
 
     private void Start()
@@ -174,9 +173,5 @@ public class PlayerMovement : MonoBehaviour
     public bool IsRunning()
     {
         return isRunning;
-    }
-    public bool IsAttacking()
-    {
-        return false;
     }
 }
