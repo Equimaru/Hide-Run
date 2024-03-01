@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Node
 {
+    public int hCost;
+    public int gCost;
+
+    public int fCost { get { return hCost + gCost; } }
+
     public bool unwalkable;
     public Vector3 nodeCenter;
 
@@ -12,4 +17,5 @@ public class Node
         unwalkable = _unwalkable;
         nodeCenter = _nodeCenter;
     }
+    
 }

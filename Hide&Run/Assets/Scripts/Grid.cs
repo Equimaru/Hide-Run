@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-public class PathfindAlgoritm : MonoBehaviour
+public class Grid : MonoBehaviour
 {
     [SerializeField] private LayerMask unwalkableMask;
 
@@ -52,7 +52,7 @@ public class PathfindAlgoritm : MonoBehaviour
         }
     }
 
-    private Node GetObjectNode(Vector3 objectPosition)
+    public Node GetObjectNode(Vector3 objectPosition)
     {
         float positionInPercentX = (objectPosition.x + gridWorldSize.x/2) / gridWorldSize.x;
         float positionInPercentY = (objectPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;

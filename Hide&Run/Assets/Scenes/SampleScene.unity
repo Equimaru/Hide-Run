@@ -1763,6 +1763,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1458528885}
   - component: {fileID: 1458528886}
+  - component: {fileID: 1458528887}
   m_Layer: 0
   m_Name: A*
   m_TagString: Untagged
@@ -1803,6 +1804,18 @@ MonoBehaviour:
   gridWorldSize: {x: 100, y: 100}
   playerPosition: {fileID: 63837570}
   nodeRadius: 0.5
+--- !u!114 &1458528887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1458528884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bbc1050a00b9a148900cba8d0a584d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1481653604
 GameObject:
   m_ObjectHideFlags: 0
@@ -2351,7 +2364,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1641768462}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.047519267, y: 0.006361595, z: -0.00030264634, w: 0.99885005}
+  m_LocalRotation: {x: 0.047519267, y: 0.0063616293, z: -0.000302648, w: 0.99885005}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
