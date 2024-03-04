@@ -12,6 +12,7 @@ public class Node
     public bool unwalkable;
     public Vector3 nodeCenter;
     public int gridX, gridY;
+    public Node parentNode;
 
     public Node(bool _unwalkable, Vector3 _nodeCenter, int _gridX, int _gridY)
     {

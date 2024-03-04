@@ -85,6 +85,8 @@ public class Grid : MonoBehaviour
         return grid[x, y];
     }
 
+    public List<Node> path;
+
     private void OnDrawGizmos()
     {
         if (grid == null) return;
@@ -92,6 +94,10 @@ public class Grid : MonoBehaviour
         foreach (Node n in grid)
         {
             Gizmos.color = (n.unwalkable) ? Color.red : Color.white;
+            if (path != null)
+            {
+                if (path.Contains(n)) Gizmos.color = Color.blue;
+            }
             if (n == playerNode) Gizmos.color = Color.green;
             Gizmos.DrawWireCube(n.nodeCenter, new Vector3(nodeDiameter - 0.1f, nodeDiameter - 0.1f, nodeDiameter - 0.1f));
         }
