@@ -14,8 +14,8 @@ public class Grid : MonoBehaviour
     [SerializeField] private float nodeRadius;
     private float nodeDiameter;
 
-    private int xSize;
-    private int ySize;
+    private int gridSizeX;
+    private int gridSizeY;
 
     private bool unwalkable;
 
@@ -24,19 +24,19 @@ public class Grid : MonoBehaviour
     private void Start()
     {
         nodeDiameter = nodeRadius * 2;
-        xSize = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
-        ySize = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+        gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
+        gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
         CreateGrid();
     }
 
     private void CreateGrid()
     {
-        grid = new Node[xSize, ySize];
+        grid = new Node[gridSizeX, gridSizeY];
         Vector3 bottomLeftPoint = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
 
-        for (int y = 0; y < ySize; y++)
+        for (int y = 0; y < gridSizeY; y++)
         {
-            for (int x = 0; x < xSize; x++)
+            for (int x = 0; x < gridSizeX; x++)
             {
                 Vector3 nodeCenter = bottomLeftPoint + Vector3.right * (nodeDiameter * x + nodeRadius) + Vector3.forward * (nodeDiameter * y + nodeRadius);
                 if (Physics.CheckBox(nodeCenter, new Vector3(nodeRadius, nodeRadius, nodeRadius), Quaternion.identity, unwalkableMask))
@@ -47,9 +47,27 @@ public class Grid : MonoBehaviour
                 {
                     unwalkable = false;
                 }
-                grid[x, y] = new Node(unwalkable, nodeCenter);
+                grid[x, y] = new Node(unwalkable, nodeCenter, x, y);
             }
         }
+    }
+
+    public List<Node> GetNeighbourNodes(Node node)
+    {
+        List<Node> neighbourNodes = new List<Node>();
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                if (x == 0 && y == 0) continue;
+                
+                if (node.gridX + x >= 0 && node.gridX + x < gridSizeX && node.gridY + y >= 0 && node.gridY + y < gridSizeY) // =< or < with gridWorldSize
+                {
+                    neighbourNodes.Add(grid[node.gridX + x, node.gridY + y]);
+                }
+            }
+        }
+        return neighbourNodes;
     }
 
     public Node GetObjectNode(Vector3 objectPosition)
