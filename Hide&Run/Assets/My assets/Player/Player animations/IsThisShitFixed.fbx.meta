@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7182e66928c390d48afe902c3c4f7e12
+guid: e9cde495ad2dcef459e73dde7b1d54d8
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -33,9 +33,9 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Rinnibg Slide
-      takeName: mixamo.com
-      internalID: -203655887218126122
+      name: Running Slide
+      takeName: Armature|mixamo.com|Layer0
+      internalID: 1474744063889944348
       firstFrame: 0
       lastFrame: 92
       wrapMode: 0
@@ -44,14 +44,14 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 1
       loopBlendPositionY: 1
       loopBlendPositionXZ: 1
-      keepOriginalOrientation: 1
+      keepOriginalOrientation: 0
       keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 1
+      keepOriginalPositionXZ: 0
       heightFromFeet: 0
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
