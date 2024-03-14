@@ -21,7 +21,7 @@ public class Player : MonoBehaviour
         detectPoints.Add(legs.transform.position);
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         detectPoints[0] = head.transform.position;
         detectPoints[1] = rShoulder.transform.position;

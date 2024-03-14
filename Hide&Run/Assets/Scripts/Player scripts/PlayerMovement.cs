@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask ground;
 
     private float movementSpeed,
+        crouchingSpeed = 2f,
         walkingSpeed = 4f,
         runningSpeed = 7f;
 
@@ -28,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isMoving,
         isRunning,
+        isCrouching,
         isGrounded;
 
     private Rigidbody rb;
@@ -61,15 +63,35 @@ public class PlayerMovement : MonoBehaviour
         idle,
         walking,
         running,
+        crouch_idle,
+        crouch_moving,
         air
     }
 
     private void StateHandler()
     {
-        if (gameInput.GetInputVectorNormalized() == Vector2.zero)
+        if (gameInput.GetInputVectorNormalized() == Vector2.zero && gameInput.GetCrouchInput() == true)
+        {
+            state = MovementState.crouch_idle;
+
+            isCrouching = true;
+            isMoving = false;
+            isRunning = false;
+        }
+        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetCrouchInput() == true)
+        {
+            state = MovementState.crouch_moving;
+            movementSpeed = crouchingSpeed;
+
+            isCrouching = true;
+            isMoving = true;
+            isRunning = false;
+        }
+        else if (gameInput.GetInputVectorNormalized() == Vector2.zero)
         {
             state = MovementState.idle;
 
+            isCrouching = false;
             isMoving = false;
             isRunning = false;
         }
@@ -78,6 +100,7 @@ public class PlayerMovement : MonoBehaviour
             state = MovementState.walking;
             movementSpeed = walkingSpeed;
 
+            isCrouching = false;
             isMoving = true;
             isRunning = false;
         }
@@ -86,9 +109,12 @@ public class PlayerMovement : MonoBehaviour
             state = MovementState.running;
             movementSpeed = runningSpeed;
 
+            isCrouching = false;
             isMoving = true;
             isRunning = true;
         }
+        
+
         //Debug.Log(state.ToString());
     }
 
@@ -135,6 +161,7 @@ public class PlayerMovement : MonoBehaviour
             if (isGrounded)
             {
                 Vector3 cameraRelativeMoveDir = CamRelativeMovementDir();
+                
                 Vector3 velocityVector = cameraRelativeMoveDir * movementSpeed;
 
                 rb.velocity = new Vector3(velocityVector.x, rb.velocity.y, velocityVector.z);
@@ -173,5 +200,9 @@ public class PlayerMovement : MonoBehaviour
     public bool IsRunning()
     {
         return isRunning;
+    }
+    public bool IsCrouching()
+    {
+        return isCrouching;
     }
 }

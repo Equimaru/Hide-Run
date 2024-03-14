@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -34,18 +35,19 @@ public class GameInput : MonoBehaviour
         else return false;
     }
 
-    //public bool GetAttackInput()
-    //{
-    //    if (inputActions.Player.Attack.ReadValue<float>() != 0f)
-    //    {
-    //        return true;
-    //    }
-    //    else return false;
-    //}
 
     public bool GetJumpInput()
     {
         if (inputActions.Player.Jump.ReadValue<float>() != 0f)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public bool GetCrouchInput()
+    {
+        if (inputActions.Player.Crouch.ReadValue<float>() != 0f)
         {
             return true;
         }
