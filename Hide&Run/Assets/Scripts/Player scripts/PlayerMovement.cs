@@ -16,15 +16,19 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private LayerMask ground;
 
-    private float movementSpeed,
+    private float currentMovementSpeed,
+        maxMovementSpeed,
         crouchingSpeed = 2f,
         walkingSpeed = 4f,
         runningSpeed = 7f;
 
+    [SerializeField] private float movementSpeedAcceleration;
+
     private float jumpForce = 2f;
 
     private float playerRadius = 0.4f;
-    private float currentVelocity;
+    private float currentVelocity,
+       currentVelocityVector;
     private float smoothTime = 0.1f;
 
     private bool isMoving,
@@ -36,7 +40,10 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 cameraRelativeMoveDir;
 
-
+    private void Awake()
+    {
+        currentMovementSpeed = 0f;
+    }
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -81,7 +88,7 @@ public class PlayerMovement : MonoBehaviour
         else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetCrouchInput() == true)
         {
             state = MovementState.crouch_moving;
-            movementSpeed = crouchingSpeed;
+            maxMovementSpeed = crouchingSpeed;
 
             isCrouching = true;
             isMoving = true;
@@ -98,7 +105,7 @@ public class PlayerMovement : MonoBehaviour
         else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput() == false)
         {
             state = MovementState.walking;
-            movementSpeed = walkingSpeed;
+            maxMovementSpeed = walkingSpeed;
 
             isCrouching = false;
             isMoving = true;
@@ -107,7 +114,7 @@ public class PlayerMovement : MonoBehaviour
         else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput() == true)
         {
             state = MovementState.running;
-            movementSpeed = runningSpeed;
+            maxMovementSpeed = runningSpeed;
 
             isCrouching = false;
             isMoving = true;
@@ -158,13 +165,37 @@ public class PlayerMovement : MonoBehaviour
 
         //Camera relative movement
         {
+            Vector3 currentVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            currentMovementSpeed = currentVelocity.magnitude;
             if (isGrounded)
             {
                 Vector3 cameraRelativeMoveDir = CamRelativeMovementDir();
-                
-                Vector3 velocityVector = cameraRelativeMoveDir * movementSpeed;
+
+                if (gameInput.GetInputVectorNormalized() != Vector2.zero)
+                {
+                    if (currentVelocity.magnitude < maxMovementSpeed)
+                    {
+                        currentMovementSpeed += movementSpeedAcceleration;
+                    }
+                    else if (currentVelocity.magnitude > maxMovementSpeed)
+                    {
+                        currentMovementSpeed -= movementSpeedAcceleration;
+                    }
+                }
+                else
+                {
+                    if (currentMovementSpeed != 0)
+                    {
+                        currentMovementSpeed -= movementSpeedAcceleration;
+                    }
+                }
+
+
+                Vector3 velocityVector = (cameraRelativeMoveDir + currentVelocity.normalized).normalized * currentMovementSpeed;
 
                 rb.velocity = new Vector3(velocityVector.x, rb.velocity.y, velocityVector.z);
+
+
 
                 if (gameInput.GetJumpInput())
                 {
