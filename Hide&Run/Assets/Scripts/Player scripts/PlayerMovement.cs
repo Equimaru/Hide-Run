@@ -31,9 +31,7 @@ public class PlayerMovement : MonoBehaviour
        currentVelocityVector;
     private float smoothTime = 0.1f;
 
-    private bool isMoving,
-        isRunning,
-        isCrouching,
+    private bool isCrouching,
         isGrounded;
 
     private Rigidbody rb;
@@ -82,8 +80,6 @@ public class PlayerMovement : MonoBehaviour
             state = MovementState.crouch_idle;
 
             isCrouching = true;
-            isMoving = false;
-            isRunning = false;
         }
         else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetCrouchInput() == true)
         {
@@ -91,16 +87,12 @@ public class PlayerMovement : MonoBehaviour
             maxMovementSpeed = crouchingSpeed;
 
             isCrouching = true;
-            isMoving = true;
-            isRunning = false;
         }
         else if (gameInput.GetInputVectorNormalized() == Vector2.zero)
         {
             state = MovementState.idle;
 
             isCrouching = false;
-            isMoving = false;
-            isRunning = false;
         }
         else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput() == false)
         {
@@ -108,8 +100,6 @@ public class PlayerMovement : MonoBehaviour
             maxMovementSpeed = walkingSpeed;
 
             isCrouching = false;
-            isMoving = true;
-            isRunning = false;
         }
         else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput() == true)
         {
@@ -117,8 +107,6 @@ public class PlayerMovement : MonoBehaviour
             maxMovementSpeed = runningSpeed;
 
             isCrouching = false;
-            isMoving = true;
-            isRunning = true;
         }
         
 
@@ -224,13 +212,10 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.DrawWireSphere(groundCheckPoint.transform.position, playerRadius);
     }
 
-    public bool IsMoving()
+    public float CurrentPlayerSpeed()
     {
-        return isMoving;
-    }
-    public bool IsRunning()
-    {
-        return isRunning;
+        //Debug.Log(currentMovementSpeed);
+        return currentMovementSpeed;
     }
     public bool IsCrouching()
     {

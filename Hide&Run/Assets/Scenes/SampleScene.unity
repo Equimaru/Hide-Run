@@ -377,7 +377,7 @@ MonoBehaviour:
   ground:
     serializedVersion: 2
     m_Bits: 64
-  movementSpeedAcceleration: 0.3
+  movementSpeedAcceleration: 0.25
   state: 0
 --- !u!54 &63837572
 Rigidbody:
