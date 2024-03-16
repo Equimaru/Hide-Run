@@ -16,13 +16,14 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private LayerMask ground;
 
+    //Used in PlayerAnimator as reference
+    public float maxMovementSpeed;
+    public float movementSpeedAcceleration = 0.25f;
+
     private float currentMovementSpeed,
-        maxMovementSpeed,
         crouchingSpeed = 2f,
         walkingSpeed = 4f,
         runningSpeed = 7f;
-
-    [SerializeField] private float movementSpeedAcceleration;
 
     private float jumpForce = 2f;
 
@@ -220,5 +221,10 @@ public class PlayerMovement : MonoBehaviour
     public bool IsCrouching()
     {
         return isCrouching;
+    }
+
+    public Vector3 GetCameraRelatedMovementDir()
+    {
+        return cameraRelativeMoveDir;
     }
 }
