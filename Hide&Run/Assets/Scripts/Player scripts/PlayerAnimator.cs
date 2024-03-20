@@ -13,7 +13,9 @@ public class PlayerAnimator : MonoBehaviour
 
     private string MOVEMENT_SPEED { get; } = "MovementSpeed";
     private string IS_CROUCHING { get; } = "IsCrouching";
+    private string IS_FAST_ENOUGH { get; } = "IsFastEnough";
     private string IS_IN_THE_AIR { get; } = "IsInTheAir";
+    private string RUNNING_SLIDE { get; } = "Running Slide";
 
     private void Awake()
     {
@@ -26,6 +28,7 @@ public class PlayerAnimator : MonoBehaviour
         playerMaxSpeedForAnimation = playerMovement.maxMovementSpeed;
         playerAnimator.SetFloat(MOVEMENT_SPEED, PlayerSpeedForAnimation());
         playerAnimator.SetBool(IS_CROUCHING, playerMovement.IsCrouching());
+        playerAnimator.SetBool(IS_FAST_ENOUGH, playerMovement.IsCrouching());
         Debug.Log(PlayerSpeedForAnimation());
     }
 
@@ -58,4 +61,17 @@ public class PlayerAnimator : MonoBehaviour
         
         return playerSpeedForAnimation;
     }
+
+    public bool IsPlayerSliding()
+    {
+        if (playerAnimator.GetCurrentAnimatorStateInfo(0).IsName(RUNNING_SLIDE))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
 }

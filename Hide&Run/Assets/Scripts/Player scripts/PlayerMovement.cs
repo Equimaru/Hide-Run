@@ -12,6 +12,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerAnimator playerAnimator;
     [SerializeField] private Transform freeLookCamera;
 
+    [SerializeField] private CapsuleCollider playerCapsuleCollider;
+
     [SerializeField] private Transform groundCheckPoint;
 
     [SerializeField] private LayerMask ground;
@@ -34,6 +36,19 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isCrouching,
         isGrounded;
+
+    //Paremeters for colloders
+    [SerializeField] private Transform standingCenterPoint;
+    [SerializeField] private Transform crouchingCenterPoint;
+    [SerializeField] private Transform slidingCenterPoint;
+
+    private float standingHeight = 1.82f;
+    private float crouchingHeight = 1.2f;
+    private float slidingHeight = 0.8f;
+
+    private float standingRadius = 0.34f;
+    private float crouchingRadius = 0.5f;
+    private float slidingRadius = 0.4f;
 
     private Rigidbody rb;
 
@@ -71,14 +86,27 @@ public class PlayerMovement : MonoBehaviour
         running,
         crouch_idle,
         crouch_moving,
+        sliding,
         air
     }
 
     private void StateHandler()
     {
-        if (gameInput.GetInputVectorNormalized() == Vector2.zero && gameInput.GetCrouchInput() == true)
+        if (playerAnimator.IsPlayerSliding())
+        {
+            state = MovementState.sliding;
+
+            playerCapsuleCollider.height = slidingHeight;
+            playerCapsuleCollider.radius = slidingRadius;
+            playerCapsuleCollider.center = slidingCenterPoint.position - player.transform.position;
+        }
+        else if (gameInput.GetInputVectorNormalized() == Vector2.zero && gameInput.GetCrouchInput() == true)
         {
             state = MovementState.crouch_idle;
+
+            playerCapsuleCollider.height = crouchingHeight;
+            playerCapsuleCollider.radius = crouchingRadius;
+            playerCapsuleCollider.center = crouchingCenterPoint.position - player.transform.position;
 
             isCrouching = true;
         }
@@ -87,11 +115,19 @@ public class PlayerMovement : MonoBehaviour
             state = MovementState.crouch_moving;
             maxMovementSpeed = crouchingSpeed;
 
+            playerCapsuleCollider.height = crouchingHeight;
+            playerCapsuleCollider.radius = crouchingRadius;
+            playerCapsuleCollider.center = crouchingCenterPoint.position - player.transform.position;
+
             isCrouching = true;
         }
         else if (gameInput.GetInputVectorNormalized() == Vector2.zero)
         {
             state = MovementState.idle;
+
+            playerCapsuleCollider.height = standingHeight;
+            playerCapsuleCollider.radius = standingRadius;
+            playerCapsuleCollider.center = standingCenterPoint.position - player.transform.position;
 
             isCrouching = false;
         }
@@ -100,12 +136,20 @@ public class PlayerMovement : MonoBehaviour
             state = MovementState.walking;
             maxMovementSpeed = walkingSpeed;
 
+            playerCapsuleCollider.height = standingHeight;
+            playerCapsuleCollider.radius = standingRadius;
+            playerCapsuleCollider.center = standingCenterPoint.position - player.transform.position;
+
             isCrouching = false;
         }
         else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput() == true)
         {
             state = MovementState.running;
             maxMovementSpeed = runningSpeed;
+
+            playerCapsuleCollider.height = standingHeight;
+            playerCapsuleCollider.radius = standingRadius;
+            playerCapsuleCollider.center = standingCenterPoint.position - player.transform.position;
 
             isCrouching = false;
         }
@@ -226,5 +270,17 @@ public class PlayerMovement : MonoBehaviour
     public Vector3 GetCameraRelatedMovementDir()
     {
         return cameraRelativeMoveDir;
+    }
+
+    public bool IsPlayerFastEnough()
+    {
+        if (currentMovementSpeed > 6.0f)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
