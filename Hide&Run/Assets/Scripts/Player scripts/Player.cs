@@ -6,27 +6,43 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private Player player;
 
+
+    //Detect points
+    public List<Vector3> detectPoints;
+
     [SerializeField] private Transform head;
     [SerializeField] private Transform rShoulder;
     [SerializeField] private Transform lSoulder;
     [SerializeField] private Transform legs;
 
-    public List<Vector3> detectPoints;
+    
+
+
 
     private void Start()
     {
-        detectPoints.Add(head.transform.position);
-        detectPoints.Add(rShoulder.transform.position);
-        detectPoints.Add(lSoulder.transform.position);
-        detectPoints.Add(legs.transform.position);
+        DetectPointsInitialization(head, rShoulder, lSoulder, legs);
     }
 
     private void FixedUpdate()
     {
-        detectPoints[0] = head.transform.position;
-        detectPoints[1] = rShoulder.transform.position;
-        detectPoints[2] = lSoulder.transform.position;
-        detectPoints[3] = legs.transform.position;
+        DetectPointsTracking(head, rShoulder, lSoulder, legs);
     }
 
+
+    private void DetectPointsInitialization(Transform point_1, Transform point_2, Transform point_3, Transform point_4)
+    {
+        detectPoints.Add(point_1.transform.position);
+        detectPoints.Add(point_2.transform.position);
+        detectPoints.Add(point_3.transform.position);
+        detectPoints.Add(point_4.transform.position);
+    }
+
+    private void DetectPointsTracking(Transform point_1, Transform point_2, Transform point_3, Transform point_4)
+    {
+        detectPoints[0] = point_1.transform.position;
+        detectPoints[1] = point_2.transform.position;
+        detectPoints[2] = point_3.transform.position;
+        detectPoints[3] = point_4.transform.position;
+    }
 }

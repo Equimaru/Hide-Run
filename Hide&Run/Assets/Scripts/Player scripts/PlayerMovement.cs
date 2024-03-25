@@ -6,13 +6,11 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
 
-    [SerializeField] private PlayerMovement player;
+    [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private GameInput gameInput;
 
     [SerializeField] private PlayerAnimator playerAnimator;
     [SerializeField] private Transform freeLookCamera;
-
-    [SerializeField] private CapsuleCollider playerCapsuleCollider;
 
     [SerializeField] private Transform groundCheckPoint;
 
@@ -21,23 +19,29 @@ public class PlayerMovement : MonoBehaviour
     //Used in PlayerAnimator as reference
     public float maxMovementSpeed;
     public float movementSpeedAcceleration = 0.25f;
+    public bool jumpPerformed;
+
+    private float movementSpeedDecceleration,
+        movementSpeedDeccelerationOnFoot = 0.2f,
+        movementSpeedDeccelerationSliding = 0.01f;
 
     private float currentMovementSpeed,
         crouchingSpeed = 2f,
         walkingSpeed = 4f,
         runningSpeed = 7f;
 
-    private float jumpForce = 2f;
+    private float jumpForce = 6f;
 
     private float playerRadius = 0.4f;
-    private float currentVelocity,
-       currentVelocityVector;
+    private float currentVelocity;
     private float smoothTime = 0.1f;
 
     private bool isCrouching,
-        isGrounded;
+        isGrounded,
+        isOnFoot;
 
     //Paremeters for colloders
+
     [SerializeField] private Transform standingCenterPoint;
     [SerializeField] private Transform crouchingCenterPoint;
     [SerializeField] private Transform slidingCenterPoint;
@@ -51,8 +55,10 @@ public class PlayerMovement : MonoBehaviour
     private float slidingRadius = 0.4f;
 
     private Rigidbody rb;
+    private CapsuleCollider playerCapsuleCollider;
 
     private Vector3 cameraRelativeMoveDir;
+
 
     private void Awake()
     {
@@ -62,17 +68,19 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true; 
+
+        playerCapsuleCollider = GetComponent<CapsuleCollider>();
     }
 
 
     private void Update()
     {
-        
         StateHandler();
     }
 
     private void FixedUpdate()
     {
+        CharacterColliderAdjustment();
         CharacterRotation();
         MovementHandler();
     }
@@ -96,66 +104,46 @@ public class PlayerMovement : MonoBehaviour
         {
             state = MovementState.sliding;
 
-            playerCapsuleCollider.height = slidingHeight;
-            playerCapsuleCollider.radius = slidingRadius;
-            playerCapsuleCollider.center = slidingCenterPoint.position - player.transform.position;
+            isOnFoot = false;
         }
         else if (gameInput.GetInputVectorNormalized() == Vector2.zero && gameInput.GetCrouchInput() == true)
         {
             state = MovementState.crouch_idle;
 
-            playerCapsuleCollider.height = crouchingHeight;
-            playerCapsuleCollider.radius = crouchingRadius;
-            playerCapsuleCollider.center = crouchingCenterPoint.position - player.transform.position;
-
             isCrouching = true;
+            isOnFoot = true;
         }
         else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetCrouchInput() == true)
         {
             state = MovementState.crouch_moving;
             maxMovementSpeed = crouchingSpeed;
 
-            playerCapsuleCollider.height = crouchingHeight;
-            playerCapsuleCollider.radius = crouchingRadius;
-            playerCapsuleCollider.center = crouchingCenterPoint.position - player.transform.position;
-
             isCrouching = true;
+            isOnFoot = true;
         }
         else if (gameInput.GetInputVectorNormalized() == Vector2.zero)
         {
             state = MovementState.idle;
 
-            playerCapsuleCollider.height = standingHeight;
-            playerCapsuleCollider.radius = standingRadius;
-            playerCapsuleCollider.center = standingCenterPoint.position - player.transform.position;
-
             isCrouching = false;
+            isOnFoot = true;
         }
         else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput() == false)
         {
             state = MovementState.walking;
             maxMovementSpeed = walkingSpeed;
 
-            playerCapsuleCollider.height = standingHeight;
-            playerCapsuleCollider.radius = standingRadius;
-            playerCapsuleCollider.center = standingCenterPoint.position - player.transform.position;
-
             isCrouching = false;
+            isOnFoot = true;
         }
         else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput() == true)
         {
             state = MovementState.running;
             maxMovementSpeed = runningSpeed;
 
-            playerCapsuleCollider.height = standingHeight;
-            playerCapsuleCollider.radius = standingRadius;
-            playerCapsuleCollider.center = standingCenterPoint.position - player.transform.position;
-
             isCrouching = false;
+            isOnFoot = true;
         }
-        
-
-        //Debug.Log(state.ToString());
     }
 
     private Vector3 CamRelativeMovementDir()
@@ -187,12 +175,10 @@ public class PlayerMovement : MonoBehaviour
             if (Physics.SphereCast(groundCheckPoint.transform.position, playerRadius, Vector3.down, out _, groundCheckDistance))
             {
                 isGrounded = true;
-                //Debug.Log("Is grounded");
             }
             else
             {
                 isGrounded = false;
-                //Debug.Log("Isn't grounded");
             }
         }
 
@@ -200,46 +186,86 @@ public class PlayerMovement : MonoBehaviour
         {
             Vector3 currentVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
             currentMovementSpeed = currentVelocity.magnitude;
-            if (isGrounded)
+
+            Vector3 cameraRelativeMoveDir = CamRelativeMovementDir();
+            
+
+            if (gameInput.GetInputVectorNormalized() != Vector2.zero && isOnFoot)
             {
-                Vector3 cameraRelativeMoveDir = CamRelativeMovementDir();
+                CharacterAcceleration(currentVelocity);
+            }
+            else
+            {
+                CharacterBraking();
+            }
 
-                if (gameInput.GetInputVectorNormalized() != Vector2.zero)
-                {
-                    if (currentVelocity.magnitude < maxMovementSpeed)
-                    {
-                        currentMovementSpeed += movementSpeedAcceleration;
-                    }
-                    else if (currentVelocity.magnitude > maxMovementSpeed)
-                    {
-                        currentMovementSpeed -= movementSpeedAcceleration;
-                    }
-                }
-                else
-                {
-                    if (currentMovementSpeed != 0)
-                    {
-                        currentMovementSpeed -= movementSpeedAcceleration;
-                    }
-                }
+            Vector3 velocityVector = (cameraRelativeMoveDir.normalized + currentVelocity.normalized).normalized * currentMovementSpeed;
 
-
-                Vector3 velocityVector = (cameraRelativeMoveDir + currentVelocity.normalized).normalized * currentMovementSpeed;
-
-                rb.velocity = new Vector3(velocityVector.x, rb.velocity.y, velocityVector.z);
+            rb.velocity = new Vector3(velocityVector.x, rb.velocity.y, velocityVector.z);
 
 
 
-                if (gameInput.GetJumpInput())
-                {
-                    rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                }
+            if (gameInput.GetJumpInput())
+            {
+                gameInput.jump = false;
+                jumpPerformed = true;
+                //CharacterJump();
             }
 
         }
 
     }
 
+
+    private void CharacterAcceleration(Vector3 velocity)
+    {
+        if (isGrounded && isOnFoot)
+        {
+            if (velocity.magnitude < maxMovementSpeed)
+            {
+                currentMovementSpeed += movementSpeedAcceleration;
+            }
+            else if (velocity.magnitude > maxMovementSpeed)
+            {
+               currentMovementSpeed -= movementSpeedAcceleration;
+            }
+        }
+    }
+
+    private void CharacterBraking()
+    {
+        if (isOnFoot)
+        {
+            movementSpeedDecceleration = movementSpeedDeccelerationOnFoot;
+        }
+        else
+        {
+            movementSpeedDecceleration = movementSpeedDeccelerationSliding;
+        }
+        if (isGrounded)
+        {
+            if (-movementSpeedDecceleration < currentMovementSpeed && currentMovementSpeed < movementSpeedDecceleration)
+            {
+                currentMovementSpeed = 0;
+            }
+            else if (-movementSpeedDecceleration > currentMovementSpeed)
+            {
+                currentMovementSpeed += movementSpeedDecceleration;
+            }
+            else
+            {
+                currentMovementSpeed -= movementSpeedDecceleration;
+            }
+        }
+    }
+
+    public void CharacterJump()
+    {
+        if (isGrounded && isOnFoot)
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+    }
 
     private void CharacterRotation()
     {
@@ -252,19 +278,74 @@ public class PlayerMovement : MonoBehaviour
         transform.rotation = Quaternion.Euler(0.0f, angle, 0.0f);
     }
 
+    private void CharacterColliderAdjustment()
+    {
+        Transform center;
+        float height, radius;
+
+        if (state == MovementState.crouch_idle || state == MovementState.crouch_moving)
+        {
+            center = crouchingCenterPoint;
+            height = crouchingHeight;
+            radius = crouchingRadius;
+        }
+        else if(state == MovementState.idle || state == MovementState.walking || state == MovementState.running)
+        {
+            center = standingCenterPoint;
+            height = standingHeight;
+            radius = standingRadius;
+        }
+        else if(state == MovementState.sliding)
+        {
+            center = slidingCenterPoint;
+            height = slidingHeight;
+            radius = slidingRadius;
+        }
+        else
+        {
+            center = slidingCenterPoint;
+            height = slidingHeight;
+            radius = slidingRadius;
+        }
+        playerCapsuleCollider.center = center.transform.position - playerMovement.transform.position;
+        playerCapsuleCollider.height = height;
+        playerCapsuleCollider.radius = radius;
+    }
+
+
+
     public void OnDrawGizmosSelected()
     {
         Gizmos.DrawWireSphere(groundCheckPoint.transform.position, playerRadius);
     }
 
+
+    //Data transferring to other scripts
+    
     public float CurrentPlayerSpeed()
     {
-        //Debug.Log(currentMovementSpeed);
         return currentMovementSpeed;
     }
     public bool IsCrouching()
     {
         return isCrouching;
+    }
+
+    public bool IsGrounded()
+    {
+        return isGrounded;
+    }
+
+    public bool IsOnFoot()
+    {
+        return isOnFoot;
+    }
+
+    public bool JumpPerformed()
+    {
+        bool performed = jumpPerformed;
+        jumpPerformed = false;
+        return performed;
     }
 
     public Vector3 GetCameraRelatedMovementDir()
@@ -283,4 +364,5 @@ public class PlayerMovement : MonoBehaviour
             return false;
         }
     }
+    
 }

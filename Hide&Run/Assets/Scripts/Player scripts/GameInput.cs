@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 
 public class GameInput : MonoBehaviour
 {
+    public bool jump;
 
     private InputActions inputActions;
 
@@ -32,17 +33,15 @@ public class GameInput : MonoBehaviour
         {
             return true;
         }
-        else return false;
+        return false;
     }
 
 
     public bool GetJumpInput()
     {
-        if (inputActions.Player.Jump.ReadValue<float>() != 0f)
-        {
-            return true;
-        }
-        return false;
+        inputActions.Player.Jump.performed += i => jump = true;
+        
+        return jump;
     }
 
     public bool GetCrouchInput()
