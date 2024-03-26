@@ -6,16 +6,13 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private Player player;
 
-
-    //Detect points
-    public List<Vector3> detectPoints;
-
+    #region DetectPoints
     [SerializeField] private Transform head;
     [SerializeField] private Transform rShoulder;
     [SerializeField] private Transform lSoulder;
     [SerializeField] private Transform legs;
-
-    
+    #endregion
+    public List<Vector3> detectPoints;
 
 
 

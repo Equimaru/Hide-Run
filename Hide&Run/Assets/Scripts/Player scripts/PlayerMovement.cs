@@ -5,43 +5,17 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-
+    #region SerializeFields
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private GameInput gameInput;
-
     [SerializeField] private PlayerAnimator playerAnimator;
     [SerializeField] private Transform freeLookCamera;
-
     [SerializeField] private Transform groundCheckPoint;
 
     [SerializeField] private LayerMask ground;
+    #endregion
 
-    //Used in PlayerAnimator as reference
-    public float maxMovementSpeed;
-    public float movementSpeedAcceleration = 0.25f;
-    public bool jumpPerformed;
-
-    private float movementSpeedDecceleration,
-        movementSpeedDeccelerationOnFoot = 0.2f,
-        movementSpeedDeccelerationSliding = 0.01f;
-
-    private float currentMovementSpeed,
-        crouchingSpeed = 2f,
-        walkingSpeed = 4f,
-        runningSpeed = 7f;
-
-    private float jumpForce = 6f;
-
-    private float playerRadius = 0.4f;
-    private float currentVelocity;
-    private float smoothTime = 0.1f;
-
-    private bool isCrouching,
-        isGrounded,
-        isOnFoot;
-
-    //Paremeters for colloders
-
+    #region Parameters for colliders
     [SerializeField] private Transform standingCenterPoint;
     [SerializeField] private Transform crouchingCenterPoint;
     [SerializeField] private Transform slidingCenterPoint;
@@ -53,12 +27,41 @@ public class PlayerMovement : MonoBehaviour
     private float standingRadius = 0.34f;
     private float crouchingRadius = 0.5f;
     private float slidingRadius = 0.4f;
-
-    private Rigidbody rb;
+    #endregion
     private CapsuleCollider playerCapsuleCollider;
+    private Rigidbody rb;
+
+    #region PlayerAnimator related variables
+    public float maxMovementSpeed;
+    public float movementSpeedAcceleration = 0.25f;
+    public bool jumpPerformed;
+    #endregion
+
+    #region Movement variables
+    private float movementSpeedDecceleration,
+        movementSpeedDeccelerationOnFoot = 0.2f,
+        movementSpeedDeccelerationSliding = 0.01f;
+
+    private float currentMovementSpeed,
+        crouchingSpeed = 2f,
+        walkingSpeed = 4f,
+        runningSpeed = 7f;
+    #endregion
+
+    #region Boolean variables
+    private bool isCrouching,
+        isGrounded,
+        isOnFoot,
+        isLanding;
+    #endregion
+
+    private float jumpForce = 6f;
+
+    private float playerRadius = 0.4f;
+    private float currentVelocity;
+    private float smoothTime = 0.1f;
 
     private Vector3 cameraRelativeMoveDir;
-
 
     private void Awake()
     {
@@ -71,7 +74,6 @@ public class PlayerMovement : MonoBehaviour
 
         playerCapsuleCollider = GetComponent<CapsuleCollider>();
     }
-
 
     private void Update()
     {
@@ -168,7 +170,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void MovementHandler()
     {
-
         //Check if grounded
         {
             float groundCheckDistance = 0.2f;
@@ -180,6 +181,16 @@ public class PlayerMovement : MonoBehaviour
             {
                 isGrounded = false;
             }
+        }
+
+        //Check for landing
+        {
+            float landingGroundCheckDistance = 1f;
+            if (Physics.SphereCast(groundCheckPoint.transform.position, playerRadius, Vector3.down, out _, landingGroundCheckDistance) && !isGrounded)
+            {
+                isLanding = true;
+            }
+            else isLanding = false;
         }
 
         //Camera relative movement
@@ -204,16 +215,12 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector3(velocityVector.x, rb.velocity.y, velocityVector.z);
 
 
-
             if (gameInput.GetJumpInput())
             {
                 gameInput.jump = false;
                 jumpPerformed = true;
-                //CharacterJump();
             }
-
         }
-
     }
 
 
@@ -232,6 +239,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+
+    //Need rework with state machine?
     private void CharacterBraking()
     {
         if (isOnFoot)
@@ -319,13 +328,12 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.DrawWireSphere(groundCheckPoint.transform.position, playerRadius);
     }
 
-
-    //Data transferring to other scripts
-    
+    #region Data transfering to other scripts
     public float CurrentPlayerSpeed()
     {
         return currentMovementSpeed;
     }
+
     public bool IsCrouching()
     {
         return isCrouching;
@@ -341,16 +349,16 @@ public class PlayerMovement : MonoBehaviour
         return isOnFoot;
     }
 
+    public bool IsLanding()
+    {
+        return isLanding;
+    }
+
     public bool JumpPerformed()
     {
         bool performed = jumpPerformed;
         jumpPerformed = false;
         return performed;
-    }
-
-    public Vector3 GetCameraRelatedMovementDir()
-    {
-        return cameraRelativeMoveDir;
     }
 
     public bool IsPlayerFastEnough()
@@ -364,5 +372,10 @@ public class PlayerMovement : MonoBehaviour
             return false;
         }
     }
-    
+
+    public Vector3 GetCameraRelatedMovementDir()
+    {
+        return cameraRelativeMoveDir;
+    }
+    #endregion
 }

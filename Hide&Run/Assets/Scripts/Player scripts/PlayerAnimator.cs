@@ -4,42 +4,44 @@ using UnityEngine;
 
 public class PlayerAnimator : MonoBehaviour
 {
+    #region SerializeFields
     [SerializeField] private Player player;
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private Animator playerAnimator;
+    #endregion
 
     private float playerSpeedForAnimation,
         playerMaxSpeedForAnimation,
         playerAccelerationForAnimation;
 
-    private bool jumpToFallTranstionStarted;
-
+    #region Animator string variables
     private string MOVEMENT_SPEED { get; } = "MovementSpeed";
     private string IS_CROUCHING { get; } = "IsCrouching";
     private string IS_FAST_ENOUGH { get; } = "IsFastEnough";
     private string IS_GROUNDED { get; } = "IsGrounded";
     private string IS_ON_FOOT { get; } = "IsOnFoot";
+    private string IS_LANDING { get; } = "IsLanding";
     private string JUMP_PERFORMED { get; } = "JumpPerformed";
     private string RUNNING_SLIDE { get; } = "Running Slide";
     private string JUMPING_UP { get; } = "Jumping Up";
     private string FALLING_IDLE { get; } = "Falling Idle";
+    #endregion
 
     private void Awake()
     {
         playerSpeedForAnimation = 0;
-        playerAccelerationForAnimation = 0.1f;
-
-        jumpToFallTranstionStarted = false;
+        playerAccelerationForAnimation = 2f;
     }
 
     private void FixedUpdate()
     {
-        playerMaxSpeedForAnimation = playerMovement.maxMovementSpeed;
+        playerMaxSpeedForAnimation = playerMovement.maxMovementSpeed * 10;
 
         playerAnimator.SetFloat(MOVEMENT_SPEED, PlayerSpeedForAnimation());
 
         playerAnimator.SetBool(IS_CROUCHING, playerMovement.IsCrouching());
         playerAnimator.SetBool(IS_GROUNDED, playerMovement.IsGrounded());
+        playerAnimator.SetBool(IS_LANDING, playerMovement.IsLanding());
         playerAnimator.SetBool(IS_ON_FOOT, playerMovement.IsOnFoot());
         playerAnimator.SetBool(IS_FAST_ENOUGH, playerMovement.IsPlayerFastEnough());
         playerAnimator.SetBool(JUMP_PERFORMED, playerMovement.JumpPerformed());
@@ -72,7 +74,7 @@ public class PlayerAnimator : MonoBehaviour
             }
         }
         
-        return playerSpeedForAnimation;
+        return Mathf.Round(playerSpeedForAnimation);
     }
 
     public bool IsPlayerSliding()
