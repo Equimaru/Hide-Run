@@ -93,4 +93,63 @@ public class PlayerAnimator : MonoBehaviour
     {
         playerMovement.CharacterJump();
     }
+
+
+    public void AnimatorBooleansHandle(PlayerStateManager player)
+    {
+        #region IsOnFoot
+        if (player.state == player.slideState || player.state == player.inAirState || player.state == player.landingState)
+        {
+            playerAnimator.SetBool(IS_ON_FOOT, false);
+        }
+        else
+        {
+            playerAnimator.SetBool(IS_ON_FOOT, true);
+        }
+        #endregion
+
+        #region IsCrouching
+        if (player.state == player.crouchIdleState || player.state == player.crouchMoveState)
+        {
+            playerAnimator.SetBool(IS_CROUCHING, true);
+        }
+        else
+        {
+            playerAnimator.SetBool(IS_CROUCHING, false);
+        }
+        #endregion
+
+        #region IsGrounded
+        if (player.state == player.inAirState || player.state == player.landingState)
+        {
+            playerAnimator.SetBool(IS_GROUNDED, false);
+        }
+        else
+        {
+            playerAnimator.SetBool(IS_GROUNDED, true);
+        }
+        #endregion
+
+        #region IsLanding
+        if (player.state == player.landingState)
+        {
+            playerAnimator.SetBool(IS_LANDING, true);
+        }
+        else
+        {
+            playerAnimator.SetBool(IS_LANDING, false);
+        }
+        #endregion
+
+        #region JumpPerformed
+        if (player.state == player.jumpState)
+        {
+            playerAnimator.SetBool(JUMP_PERFORMED, true);
+        }
+        else
+        {
+            playerAnimator.SetBool(JUMP_PERFORMED, false);
+        }
+        #endregion
+    }
 }

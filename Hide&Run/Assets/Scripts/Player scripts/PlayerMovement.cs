@@ -15,20 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask ground;
     #endregion
 
-    #region Parameters for colliders
-    [SerializeField] private Transform standingCenterPoint;
-    [SerializeField] private Transform crouchingCenterPoint;
-    [SerializeField] private Transform slidingCenterPoint;
-
-    private float standingHeight = 1.82f;
-    private float crouchingHeight = 1.2f;
-    private float slidingHeight = 0.8f;
-
-    private float standingRadius = 0.34f;
-    private float crouchingRadius = 0.5f;
-    private float slidingRadius = 0.4f;
-    #endregion
-    private CapsuleCollider playerCapsuleCollider;
+    
     private Rigidbody rb;
 
     #region PlayerAnimator related variables
@@ -71,81 +58,17 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true; 
-
-        playerCapsuleCollider = GetComponent<CapsuleCollider>();
     }
 
     private void Update()
     {
-        StateHandler();
+        
     }
 
     private void FixedUpdate()
     {
-        CharacterColliderAdjustment();
         CharacterRotation();
         MovementHandler();
-    }
-
-
-    public MovementState state;
-    public enum MovementState
-    {
-        idle,
-        walking,
-        running,
-        crouch_idle,
-        crouch_moving,
-        sliding,
-        air
-    }
-
-    private void StateHandler()
-    {
-        if (playerAnimator.IsPlayerSliding())
-        {
-            state = MovementState.sliding;
-
-            isOnFoot = false;
-        }
-        else if (gameInput.GetInputVectorNormalized() == Vector2.zero && gameInput.GetCrouchInput() == true)
-        {
-            state = MovementState.crouch_idle;
-
-            isCrouching = true;
-            isOnFoot = true;
-        }
-        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetCrouchInput() == true)
-        {
-            state = MovementState.crouch_moving;
-            maxMovementSpeed = crouchingSpeed;
-
-            isCrouching = true;
-            isOnFoot = true;
-        }
-        else if (gameInput.GetInputVectorNormalized() == Vector2.zero)
-        {
-            state = MovementState.idle;
-
-            isCrouching = false;
-            isOnFoot = true;
-        }
-        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput() == false)
-        {
-            state = MovementState.walking;
-            maxMovementSpeed = walkingSpeed;
-
-            isCrouching = false;
-            isOnFoot = true;
-        }
-        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput() == true)
-        {
-            state = MovementState.running;
-            maxMovementSpeed = runningSpeed;
-
-            isCrouching = false;
-            isOnFoot = true;
-        }
     }
 
     private Vector3 CamRelativeMovementDir()
@@ -287,39 +210,7 @@ public class PlayerMovement : MonoBehaviour
         transform.rotation = Quaternion.Euler(0.0f, angle, 0.0f);
     }
 
-    public void CharacterColliderAdjustment()
-    {
-        Transform center;
-        float height, radius;
-
-        if (state == MovementState.crouch_idle || state == MovementState.crouch_moving)
-        {
-            center = crouchingCenterPoint;
-            height = crouchingHeight;
-            radius = crouchingRadius;
-        }
-        else if(state == MovementState.idle || state == MovementState.walking || state == MovementState.running)
-        {
-            center = standingCenterPoint;
-            height = standingHeight;
-            radius = standingRadius;
-        }
-        else if(state == MovementState.sliding)
-        {
-            center = slidingCenterPoint;
-            height = slidingHeight;
-            radius = slidingRadius;
-        }
-        else
-        {
-            center = slidingCenterPoint;
-            height = slidingHeight;
-            radius = slidingRadius;
-        }
-        playerCapsuleCollider.center = center.transform.position - playerMovement.transform.position;
-        playerCapsuleCollider.height = height;
-        playerCapsuleCollider.radius = radius;
-    }
+    
 
 
 
