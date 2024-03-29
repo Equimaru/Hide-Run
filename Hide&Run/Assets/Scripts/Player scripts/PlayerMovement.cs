@@ -287,7 +287,7 @@ public class PlayerMovement : MonoBehaviour
         transform.rotation = Quaternion.Euler(0.0f, angle, 0.0f);
     }
 
-    private void CharacterColliderAdjustment()
+    public void CharacterColliderAdjustment()
     {
         Transform center;
         float height, radius;
