@@ -9,6 +9,8 @@ public class GameInput : MonoBehaviour
 {
     public bool jump;
 
+    private bool runImputActive;
+
     private InputActions inputActions;
 
     private void Awake()
@@ -17,6 +19,11 @@ public class GameInput : MonoBehaviour
         inputActions.Player.Enable();
     }
 
+    private void OnEnable()
+    {
+        inputActions.Player.Run.started += i => runImputActive = true;
+        inputActions.Player.Run.canceled += i => runImputActive = false;
+    }
 
     public Vector2 GetInputVectorNormalized()
     {
@@ -29,13 +36,10 @@ public class GameInput : MonoBehaviour
 
     public bool GetRunInput()
     {
-        if (inputActions.Player.Run.ReadValue<float>() != 0f)
-        {
-            return true;
-        }
-        return false;
+        return runImputActive;
     }
 
+   
 
     public bool GetJumpInput()
     {
