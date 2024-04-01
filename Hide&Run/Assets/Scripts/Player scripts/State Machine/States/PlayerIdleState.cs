@@ -5,22 +5,32 @@ using UnityEngine;
 public class PlayerIdleState : PlayerBaseState
 {
     GameInput gameInput;
+    PlayerMovementManager playerMovementManager;
+    PlayerColliderManager playerColliderManager;
+    PlayerAnimator playerAnimator;
 
     public override void OnEnter(PlayerStateManager player)
     {
-        player.GetComponent<PlayerColliderManager>().PlayerColliderAdjustment(player);
-        player.GetComponent<PlayerAnimator>().AnimatorBooleansHandle(player);
+        gameInput = GameObject.Find("Game Input").GetComponent<GameInput>();
 
-        gameInput = player.GetComponent<GameInput>();
+        playerColliderManager = player.GetComponent<PlayerColliderManager>();
+        playerColliderManager.PlayerColliderAdjustment(player);
+
+        playerMovementManager = player.GetComponent<PlayerMovementManager>();
+
+        playerAnimator = GameObject.Find("Player Visual").GetComponent<PlayerAnimator>();
+        playerAnimator.AnimatorBooleansHandle(player);
+
+        Debug.Log("Entered in Idle State");
     }
 
     public override void OnUpdate(PlayerStateManager player)
     {
         #region Switch to InAirState
-        float groundCheckDistance = 1.1f;
-        float playerRadius = 0.4f;
-        if (!Physics.SphereCast(player.transform.position, playerRadius, Vector3.down, out _, groundCheckDistance))
+        float playerRadius = 0.2f;
+        if (!Physics.CheckSphere(player.transform.position, playerRadius))
         {
+            Debug.Log(player.transform.position);
             player.SwitchState(player.inAirState);
         }
         #endregion
@@ -63,12 +73,14 @@ public class PlayerIdleState : PlayerBaseState
         #region Switch to JumpState
         else if (gameInput.GetJumpInput())
         {
-            player.SwitchState(player.crouchMoveState);
+            player.SwitchState(player.jumpState);
         }
         #endregion
         else
         {
-            Debug.Log("State didn't change");
+            Debug.Log("State didn't change (Idle)");
         }
+
+        playerMovementManager.MovementHandler(player);
     }
 }

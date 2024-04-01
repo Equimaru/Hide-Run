@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerStateManager : MonoBehaviour
 {
+    public GameInput gameInput;
+    public PlayerAnimator playerAnimator;
+
     #region PlayerStates
     public PlayerBaseState state;
     public PlayerIdleState idleState = new();
@@ -25,7 +28,7 @@ public class PlayerStateManager : MonoBehaviour
     }
 
 
-    void Update()
+    void FixedUpdate()
     {
         state.OnUpdate(this);
     }

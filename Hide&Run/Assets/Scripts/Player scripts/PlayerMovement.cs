@@ -19,13 +19,13 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
 
     #region PlayerAnimator related variables
-    public float maxMovementSpeed;
+    public float maxMovementSpeed = 4f;
     public float movementSpeedAcceleration = 0.25f;
     public bool jumpPerformed;
     #endregion
 
     #region Movement variables
-    private float movementSpeedDecceleration,
+    private float movementSpeedDecceleration = 0.2f,
         movementSpeedDeccelerationOnFoot = 0.2f,
         movementSpeedDeccelerationSliding = 0.01f;
 
@@ -44,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
 
     private float jumpForce = 6f;
 
-    private float playerRadius = 0.4f;
+    private float playerRadius = 0.2f;
     private float currentVelocity;
     private float smoothTime = 0.1f;
 
@@ -60,17 +60,6 @@ public class PlayerMovement : MonoBehaviour
         rb.freezeRotation = true; 
     }
 
-    private void Update()
-    {
-        
-    }
-
-    private void FixedUpdate()
-    {
-        CharacterRotation();
-        MovementHandler();
-    }
-
     private Vector3 CamRelativeMovementDir()
     {
         Vector2 inputVector = gameInput.GetInputVectorNormalized();
@@ -84,27 +73,8 @@ public class PlayerMovement : MonoBehaviour
         return cameraRelativeMoveDir;
     }
 
-    public Vector2 InputVector()
+    public void OldMovementHandler(PlayerStateManager player)
     {
-        return gameInput.GetInputVectorNormalized();
-    }
-
-   
-
-    private void MovementHandler()
-    {
-        //Check if grounded
-        {
-            float groundCheckDistance = 0.2f;
-            if (Physics.SphereCast(groundCheckPoint.transform.position, playerRadius, Vector3.down, out _, groundCheckDistance))
-            {
-                isGrounded = true;
-            }
-            else
-            {
-                isGrounded = false;
-            }
-        }
 
         //Check for landing
         {
@@ -149,57 +119,44 @@ public class PlayerMovement : MonoBehaviour
 
     private void CharacterAcceleration(Vector3 velocity)
     {
-        if (isGrounded && isOnFoot)
+        
+        if (velocity.magnitude < maxMovementSpeed)
         {
-            if (velocity.magnitude < maxMovementSpeed)
-            {
-                currentMovementSpeed += movementSpeedAcceleration;
-            }
-            else if (velocity.magnitude > maxMovementSpeed)
-            {
-               currentMovementSpeed -= movementSpeedAcceleration;
-            }
+            currentMovementSpeed += movementSpeedAcceleration;
         }
+        else if (velocity.magnitude > maxMovementSpeed)
+        {
+            currentMovementSpeed -= movementSpeedAcceleration;
+        }
+        
     }
 
 
-    //Need rework with state machine?
+    //Does it need rework with state machine?
     private void CharacterBraking()
     {
-        if (isOnFoot)
+        
+        if (-movementSpeedDecceleration < currentMovementSpeed && currentMovementSpeed < movementSpeedDecceleration)
         {
-            movementSpeedDecceleration = movementSpeedDeccelerationOnFoot;
+            currentMovementSpeed = 0;
+        }
+        else if (-movementSpeedDecceleration > currentMovementSpeed)
+        {
+            currentMovementSpeed += movementSpeedDecceleration;
         }
         else
         {
-            movementSpeedDecceleration = movementSpeedDeccelerationSliding;
+            currentMovementSpeed -= movementSpeedDecceleration;
         }
-        if (isGrounded)
-        {
-            if (-movementSpeedDecceleration < currentMovementSpeed && currentMovementSpeed < movementSpeedDecceleration)
-            {
-                currentMovementSpeed = 0;
-            }
-            else if (-movementSpeedDecceleration > currentMovementSpeed)
-            {
-                currentMovementSpeed += movementSpeedDecceleration;
-            }
-            else
-            {
-                currentMovementSpeed -= movementSpeedDecceleration;
-            }
-        }
+    
     }
 
     public void CharacterJump()
     {
-        if (isGrounded && isOnFoot)
-        {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        }
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
 
-    private void CharacterRotation()
+    public void CharacterRotation()
     {
         Vector3 cameraRelativeMoveDir = CamRelativeMovementDir();
 
@@ -216,7 +173,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnDrawGizmosSelected()
     {
-        Gizmos.DrawWireSphere(groundCheckPoint.transform.position, playerRadius);
+        Gizmos.DrawWireSphere(playerMovement.transform.position, playerRadius);
     }
 
     #region Data transfering to other scripts

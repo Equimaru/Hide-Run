@@ -8,6 +8,8 @@ public class PlayerSlideState : PlayerBaseState
     {
         player.GetComponent<PlayerColliderManager>().PlayerColliderAdjustment(player);
         player.GetComponent<PlayerAnimator>().AnimatorBooleansHandle(player);
+
+        Debug.Log("Entered in Slide State");
     }
 
     public override void OnUpdate(PlayerStateManager player)

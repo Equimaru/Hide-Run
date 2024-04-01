@@ -6,9 +6,10 @@ public class PlayerAnimator : MonoBehaviour
 {
     #region SerializeFields
     [SerializeField] private Player player;
-    [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private Animator playerAnimator;
     #endregion
+
+    private PlayerMovementManager playerMovementManager;
 
     private float playerSpeedForAnimation,
         playerMaxSpeedForAnimation,
@@ -27,6 +28,10 @@ public class PlayerAnimator : MonoBehaviour
     private string FALLING_IDLE { get; } = "Falling Idle";
     #endregion
 
+    private void Start()
+    {
+        playerMovementManager = GameObject.Find("Player").GetComponent<PlayerMovementManager>();
+    }
     private void Awake()
     {
         playerSpeedForAnimation = 0;
@@ -35,16 +40,16 @@ public class PlayerAnimator : MonoBehaviour
 
     private void FixedUpdate()
     {
-        playerMaxSpeedForAnimation = playerMovement.maxMovementSpeed * 10;
+        playerMaxSpeedForAnimation = playerMovementManager.maxMovementSpeed * 10;
 
         playerAnimator.SetFloat(MOVEMENT_SPEED, PlayerSpeedForAnimation());
 
-        playerAnimator.SetBool(IS_CROUCHING, playerMovement.IsCrouching());
-        playerAnimator.SetBool(IS_GROUNDED, playerMovement.IsGrounded());
-        playerAnimator.SetBool(IS_LANDING, playerMovement.IsLanding());
-        playerAnimator.SetBool(IS_ON_FOOT, playerMovement.IsOnFoot());
-        playerAnimator.SetBool(IS_FAST_ENOUGH, playerMovement.IsPlayerFastEnough());
-        playerAnimator.SetBool(JUMP_PERFORMED, playerMovement.JumpPerformed());
+        //playerAnimator.SetBool(IS_CROUCHING, playerMovementManager.IsCrouching());
+        //playerAnimator.SetBool(IS_GROUNDED, playerMovementManager.IsGrounded());
+        //playerAnimator.SetBool(IS_LANDING, playerMovementManager.IsLanding());
+        //playerAnimator.SetBool(IS_ON_FOOT, playerMovementManager.IsOnFoot());
+        //playerAnimator.SetBool(IS_FAST_ENOUGH, playerMovementManager.IsPlayerFastEnough());
+        //playerAnimator.SetBool(JUMP_PERFORMED, playerMovementManager.JumpPerformed());
     }
 
     private void Update()
@@ -55,7 +60,7 @@ public class PlayerAnimator : MonoBehaviour
 
     private float PlayerSpeedForAnimation()
     {
-        if (playerMovement.GetCameraRelatedMovementDir() != Vector3.zero)
+        if (playerMovementManager.GetCameraRelatedMovementDir() != Vector3.zero)
         {
             if (playerSpeedForAnimation < playerMaxSpeedForAnimation)
             {
@@ -91,7 +96,7 @@ public class PlayerAnimator : MonoBehaviour
 
     void JumpEvent()
     {
-        playerMovement.CharacterJump();
+        playerMovementManager.CharacterJump();
     }
 
 
