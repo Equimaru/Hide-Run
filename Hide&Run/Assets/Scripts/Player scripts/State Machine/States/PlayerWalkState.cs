@@ -22,9 +22,6 @@ public class PlayerWalkState : PlayerBaseState
         playerAnimator.AnimatorBooleansHandle(player);
 
         Debug.Log("Entered in Walk State");
-
-        playerMovementManager.CharacterRotation();
-        playerMovementManager.MovementHandler(player);
     }
 
     public override void OnUpdate(PlayerStateManager player)
@@ -38,10 +35,10 @@ public class PlayerWalkState : PlayerBaseState
         }
         #endregion
 
-        #region Switch to IdleState
-        else if (gameInput.GetInputVectorNormalized() == Vector2.zero)
+        #region Switch to JumpState
+        else if (gameInput.GetJumpInput())
         {
-            player.SwitchState(player.idleState);
+            player.SwitchState(player.jumpState);
         }
         #endregion
 
@@ -52,13 +49,6 @@ public class PlayerWalkState : PlayerBaseState
         }
         #endregion
 
-        #region Switch to CrouchIdleState
-        else if (gameInput.GetInputVectorNormalized() == Vector2.zero && gameInput.GetCrouchInput())
-        {
-            player.SwitchState(player.crouchIdleState);
-        }
-        #endregion
-
         #region Switch to CrouchMoveState
         else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetCrouchInput())
         {
@@ -66,19 +56,13 @@ public class PlayerWalkState : PlayerBaseState
         }
         #endregion
 
-        #region Switch to SlideState
-        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput() && gameInput.GetCrouchInput())
+        #region Switch to IdleState
+        else if (gameInput.GetInputVectorNormalized() == Vector2.zero)
         {
-            player.SwitchState(player.slideState);
+            player.SwitchState(player.idleState);
         }
         #endregion
 
-        #region Switch to JumpState
-        else if (gameInput.GetJumpInput())
-        {
-            player.SwitchState(player.jumpState);
-        }
-        #endregion
         else
         {
             Debug.Log("State didn't change (Walk)");

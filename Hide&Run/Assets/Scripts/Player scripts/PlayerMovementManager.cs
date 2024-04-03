@@ -13,9 +13,9 @@ public class PlayerMovementManager : MonoBehaviour
     public float maxMovementSpeed;
     public float currentMovementSpeed,
         idleSpeed = 0,
-        crouchingSpeed = 2f,
-        walkingSpeed = 4f,
-        runningSpeed = 7f;
+        crouchSpeed = 2f,
+        walkSpeed = 4f,
+        runSpeed = 7f;
     public float movementSpeedAcceleration = 0.25f;
 
     private float jumpForce = 6f;
@@ -64,11 +64,11 @@ public class PlayerMovementManager : MonoBehaviour
         }
         else if (player.state == player.walkState)
         {
-            maxMovementSpeed = walkingSpeed;
+            maxMovementSpeed = walkSpeed;
         }
-        else
+        else if (player.state == player.runState)
         {
-            
+            maxMovementSpeed = runSpeed;
         }
 
         Vector3 currentVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);

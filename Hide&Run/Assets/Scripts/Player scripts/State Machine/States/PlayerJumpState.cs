@@ -22,6 +22,22 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void OnUpdate(PlayerStateManager player)
     {
-        
+        #region Switch to InAirState
+        float playerRadius = 0.2f;
+        float landingGroundCheckDistance = 1f;
+        if (!Physics.CheckSphere(player.transform.position, playerRadius))
+        {
+            Debug.Log(player.transform.position);
+            player.SwitchState(player.inAirState);
+        }
+        #endregion
+
+        #region Switch to LandingState
+        else if (Physics.SphereCast(player.transform.position, playerRadius, Vector3.down, out _, landingGroundCheckDistance))
+        {
+            Debug.Log(player.transform.position);
+            player.SwitchState(player.landingState);
+        }
+        #endregion
     }
 }

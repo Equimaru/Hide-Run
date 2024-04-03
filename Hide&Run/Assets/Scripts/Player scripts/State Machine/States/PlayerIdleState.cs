@@ -35,47 +35,27 @@ public class PlayerIdleState : PlayerBaseState
         }
         #endregion
 
-        #region Switch to WalkState
-        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && !gameInput.GetRunInput())
-        {
-            player.SwitchState(player.walkState);
-        }
-        #endregion
-
-        #region Switch to RunState
-        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput())
-        {
-            player.SwitchState(player.runState);
-        }
-        #endregion
-
-        #region Switch to CrouchIdleState
-        else if (gameInput.GetInputVectorNormalized() == Vector2.zero && gameInput.GetCrouchInput())
-        {
-            player.SwitchState(player.crouchIdleState);
-        }
-        #endregion
-
-        #region Switch to CrouchMoveState
-        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetCrouchInput())
-        {
-            player.SwitchState(player.crouchMoveState);
-        }
-        #endregion
-
-        #region Switch to SlideState
-        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetCrouchInput())
-        {
-            player.SwitchState(player.slideState);
-        }
-        #endregion
-
         #region Switch to JumpState
         else if (gameInput.GetJumpInput())
         {
             player.SwitchState(player.jumpState);
         }
         #endregion
+
+        #region Switch to CrouchIdleState
+        else if (gameInput.GetCrouchInput())
+        {
+            player.SwitchState(player.crouchIdleState);
+        }
+        #endregion
+
+        #region Switch to WalkState
+        else if (gameInput.GetInputVectorNormalized() != Vector2.zero)
+        {
+            player.SwitchState(player.walkState);
+        }
+        #endregion
+       
         else
         {
             Debug.Log("State didn't change (Idle)");

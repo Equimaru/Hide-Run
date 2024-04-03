@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerRunState : PlayerBaseState
 {
     GameInput gameInput;
+    PlayerMovementManager playerMovementManager;
     PlayerColliderManager playerColliderManager;
     PlayerAnimator playerAnimator;
 
@@ -14,6 +15,8 @@ public class PlayerRunState : PlayerBaseState
         playerColliderManager = player.GetComponent<PlayerColliderManager>();
         playerColliderManager.PlayerColliderAdjustment(player);
 
+        playerMovementManager = player.GetComponent<PlayerMovementManager>();
+
         playerAnimator = GameObject.Find("Player Visual").GetComponent<PlayerAnimator>();
         playerAnimator.AnimatorBooleansHandle(player);
 
@@ -22,6 +25,49 @@ public class PlayerRunState : PlayerBaseState
 
     public override void OnUpdate(PlayerStateManager player)
     {
-        
+        #region Switch to InAirState
+        float playerRadius = 0.2f;
+        if (!Physics.CheckSphere(player.transform.position, playerRadius))
+        {
+            Debug.Log(player.transform.position);
+            player.SwitchState(player.inAirState);
+        }
+        #endregion
+
+        #region Switch to JumpState
+        else if (gameInput.GetJumpInput())
+        {
+            player.SwitchState(player.jumpState);
+        }
+        #endregion
+
+        #region Switch to SlideState
+        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput() && gameInput.GetCrouchInput())
+        {
+            player.SwitchState(player.slideState);
+        }
+        #endregion
+
+        #region Switch to CrouchMoveState
+        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetCrouchInput())
+        {
+            player.SwitchState(player.crouchMoveState);
+        }
+        #endregion
+
+        #region Switch to WalkState
+        else if (gameInput.GetInputVectorNormalized() != Vector2.zero)
+        {
+            player.SwitchState(player.walkState);
+        }
+        #endregion
+
+        else
+        {
+            Debug.Log("State didn't change (Run)");
+        }
+
+        playerMovementManager.CharacterRotation();
+        playerMovementManager.MovementHandler(player);
     }
 }
