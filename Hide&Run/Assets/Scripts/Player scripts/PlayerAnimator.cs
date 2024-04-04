@@ -43,20 +43,7 @@ public class PlayerAnimator : MonoBehaviour
         playerMaxSpeedForAnimation = playerMovementManager.maxMovementSpeed * 10;
 
         playerAnimator.SetFloat(MOVEMENT_SPEED, PlayerSpeedForAnimation());
-
-        //playerAnimator.SetBool(IS_CROUCHING, playerMovementManager.IsCrouching());
-        //playerAnimator.SetBool(IS_GROUNDED, playerMovementManager.IsGrounded());
-        //playerAnimator.SetBool(IS_LANDING, playerMovementManager.IsLanding());
-        //playerAnimator.SetBool(IS_ON_FOOT, playerMovementManager.IsOnFoot());
-        //playerAnimator.SetBool(IS_FAST_ENOUGH, playerMovementManager.IsPlayerFastEnough());
-        //playerAnimator.SetBool(JUMP_PERFORMED, playerMovementManager.JumpPerformed());
     }
-
-    private void Update()
-    {
-
-    }
-
 
     private float PlayerSpeedForAnimation()
     {
@@ -98,7 +85,6 @@ public class PlayerAnimator : MonoBehaviour
     {
         playerMovementManager.CharacterJump();
     }
-
 
     public void AnimatorBooleansHandle(PlayerStateManager player)
     {

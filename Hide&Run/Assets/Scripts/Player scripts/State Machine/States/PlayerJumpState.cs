@@ -8,6 +8,8 @@ public class PlayerJumpState : PlayerBaseState
     PlayerColliderManager playerColliderManager;
     PlayerAnimator playerAnimator;
 
+    bool jumpInProgress;
+
     public override void OnEnter(PlayerStateManager player)
     {
         gameInput = GameObject.Find("Game Input").GetComponent<GameInput>();
@@ -17,14 +19,17 @@ public class PlayerJumpState : PlayerBaseState
         playerAnimator = GameObject.Find("Player Visual").GetComponent<PlayerAnimator>();
         playerAnimator.AnimatorBooleansHandle(player);
 
+        jumpInProgress = true;
         Debug.Log("Entered in Jump State");
     }
 
     public override void OnUpdate(PlayerStateManager player)
     {
+        if (jumpInProgress) return;
+
         #region Switch to InAirState
         float playerRadius = 0.2f;
-        float landingGroundCheckDistance = 1f;
+        float landingGroundCheckDistance = 0.2f;
         if (!Physics.CheckSphere(player.transform.position, playerRadius))
         {
             Debug.Log(player.transform.position);
@@ -39,5 +44,10 @@ public class PlayerJumpState : PlayerBaseState
             player.SwitchState(player.landingState);
         }
         #endregion
+    }
+
+    void EndJumpEvent()
+    {
+        jumpInProgress = false;
     }
 }
