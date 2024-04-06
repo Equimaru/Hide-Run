@@ -22,6 +22,11 @@ public class PlayerLandingState : PlayerBaseState
 
     public override void OnUpdate(PlayerStateManager player)
     {
-        
+        #region Switch to IdleState
+        if (gameInput.GetInputVectorNormalized() == Vector2.zero)
+        {
+            player.SwitchState(player.idleState);
+        }
+        #endregion
     }
 }

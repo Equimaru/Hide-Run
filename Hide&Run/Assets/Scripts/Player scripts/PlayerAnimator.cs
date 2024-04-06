@@ -16,8 +16,6 @@ public class PlayerAnimator : MonoBehaviour
         playerMaxSpeedForAnimation,
         playerAccelerationForAnimation;
 
-    private bool jumpPerformed;
-
     #region Animator string variables
     private string MOVEMENT_SPEED { get; } = "MovementSpeed";
     private string IS_CROUCHING { get; } = "IsCrouching";
@@ -145,7 +143,7 @@ public class PlayerAnimator : MonoBehaviour
         #endregion
 
         #region JumpPerformed
-        if (player.state == player.jumpState && !jumpPerformed)
+        if (player.state == player.jumpState)
         {
             playerAnimator.SetTrigger(JUMP_PERFORMED);
         }

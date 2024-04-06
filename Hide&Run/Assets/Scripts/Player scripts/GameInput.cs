@@ -44,8 +44,9 @@ public class GameInput : MonoBehaviour
     public bool GetJumpInput()
     {
         inputActions.Player.Jump.performed += i => jump = true;
-        
-        return jump;
+        bool _jump = jump;
+        jump = false;
+        return _jump;
     }
 
     public bool GetCrouchInput()
