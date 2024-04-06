@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,8 @@ public class PlayerAnimator : MonoBehaviour
         playerMaxSpeedForAnimation,
         playerAccelerationForAnimation;
 
+    private bool jumpPerformed;
+
     #region Animator string variables
     private string MOVEMENT_SPEED { get; } = "MovementSpeed";
     private string IS_CROUCHING { get; } = "IsCrouching";
@@ -27,6 +30,10 @@ public class PlayerAnimator : MonoBehaviour
     private string JUMPING_UP { get; } = "Jumping Up";
     private string FALLING_IDLE { get; } = "Falling Idle";
     #endregion
+
+    public delegate void JumpEndedEventHandler(object soure, EventArgs args);
+
+    public event JumpEndedEventHandler JumpEnded;
 
     private void Start()
     {
@@ -86,6 +93,11 @@ public class PlayerAnimator : MonoBehaviour
         playerMovementManager.CharacterJump();
     }
 
+    void EndJumpEvent()
+    {
+        OnJumpEnded();
+    }
+
     public void AnimatorBooleansHandle(PlayerStateManager player)
     {
         #region IsOnFoot
@@ -133,14 +145,19 @@ public class PlayerAnimator : MonoBehaviour
         #endregion
 
         #region JumpPerformed
-        if (player.state == player.jumpState)
+        if (player.state == player.jumpState && !jumpPerformed)
         {
-            playerAnimator.SetBool(JUMP_PERFORMED, true);
+            playerAnimator.SetTrigger(JUMP_PERFORMED);
         }
-        else
-        {
-            playerAnimator.SetBool(JUMP_PERFORMED, false);
-        }
+        
         #endregion
+    }
+
+    protected virtual void OnJumpEnded()
+    {
+        if (JumpEnded != null)
+        {
+            JumpEnded(this, EventArgs.Empty);
+        }
     }
 }

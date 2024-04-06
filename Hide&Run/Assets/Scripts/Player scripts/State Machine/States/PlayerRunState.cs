@@ -56,9 +56,16 @@ public class PlayerRunState : PlayerBaseState
         #endregion
 
         #region Switch to WalkState
-        else if (gameInput.GetInputVectorNormalized() != Vector2.zero)
+        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && !gameInput.GetRunInput())
         {
             player.SwitchState(player.walkState);
+        }
+        #endregion
+
+        #region Switch to IdleState
+        else if (gameInput.GetInputVectorNormalized() == Vector2.zero)
+        {
+            player.SwitchState(player.idleState);
         }
         #endregion
 

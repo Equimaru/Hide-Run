@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,8 @@ public class PlayerJumpState : PlayerBaseState
         playerAnimator = GameObject.Find("Player Visual").GetComponent<PlayerAnimator>();
         playerAnimator.AnimatorBooleansHandle(player);
 
+        playerAnimator.JumpEnded += OnJumpEnded;
+
         jumpInProgress = true;
         Debug.Log("Entered in Jump State");
     }
@@ -27,12 +30,11 @@ public class PlayerJumpState : PlayerBaseState
     {
         if (jumpInProgress) return;
 
-        #region Switch to InAirState
         float playerRadius = 0.2f;
-        float landingGroundCheckDistance = 0.2f;
+        float landingGroundCheckDistance = 0.3f;
+        #region Switch to InAirState
         if (!Physics.CheckSphere(player.transform.position, playerRadius))
         {
-            Debug.Log(player.transform.position);
             player.SwitchState(player.inAirState);
         }
         #endregion
@@ -40,14 +42,21 @@ public class PlayerJumpState : PlayerBaseState
         #region Switch to LandingState
         else if (Physics.SphereCast(player.transform.position, playerRadius, Vector3.down, out _, landingGroundCheckDistance))
         {
-            Debug.Log(player.transform.position);
             player.SwitchState(player.landingState);
+        }
+        #endregion
+
+        #region Switch to IdleState
+        else if (gameInput.GetInputVectorNormalized() == Vector2.zero && !Physics.CheckSphere(player.transform.position, playerRadius))
+        {
+            player.SwitchState(player.idleState);
         }
         #endregion
     }
 
-    void EndJumpEvent()
+    public void OnJumpEnded(object sourse, EventArgs e)
     {
         jumpInProgress = false;
+        Debug.Log("Event worked");
     }
 }
