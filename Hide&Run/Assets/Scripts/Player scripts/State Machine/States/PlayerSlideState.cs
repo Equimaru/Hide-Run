@@ -80,6 +80,6 @@ public class PlayerSlideState : PlayerBaseState
     public void OnGettingUpSlide(object sourse, EventArgs e)
     {
         Debug.Log("Cyberbulling");
-        playerMovementManager.SetPlayerSlideVelocityMagnitude(2f);
+        playerMovementManager.SetPlayerSlideVelocityMagnitude(4f);
     }
 }

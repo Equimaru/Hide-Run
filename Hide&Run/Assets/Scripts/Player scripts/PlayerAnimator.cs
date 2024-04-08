@@ -19,14 +19,11 @@ public class PlayerAnimator : MonoBehaviour
     #region Animator string variables
     private string MOVEMENT_SPEED { get; } = "MovementSpeed";
     private string IS_CROUCHING { get; } = "IsCrouching";
-    private string IS_FAST_ENOUGH { get; } = "IsFastEnough";
-    private string IS_GROUNDED { get; } = "IsGrounded";
-    private string IS_ON_FOOT { get; } = "IsOnFoot";
+    private string IS_STANDING { get; } = "IsStanding";
+    private string IS_SLIDING { get; } = "IsSliding";
+    private string IS_IN_AIR { get; } = "IsInAir";
     private string IS_LANDING { get; } = "IsLanding";
     private string JUMP_PERFORMED { get; } = "JumpPerformed";
-    private string RUNNING_SLIDE { get; } = "Running Slide";
-    private string JUMPING_UP { get; } = "Jumping Up";
-    private string FALLING_IDLE { get; } = "Falling Idle";
     #endregion
 
     public delegate void JumpEndedEventHandler(object soure, EventArgs args);
@@ -79,17 +76,17 @@ public class PlayerAnimator : MonoBehaviour
         return Mathf.Round(playerSpeedForAnimation);
     }
 
-    public bool IsPlayerSliding()
-    {
-        if (playerAnimator.GetCurrentAnimatorStateInfo(0).IsName(RUNNING_SLIDE))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    //public bool IsPlayerSliding()
+    //{
+    //    if (playerAnimator.GetCurrentAnimatorStateInfo(0).IsName(RUNNING_SLIDE))
+    //    {
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        return false;
+    //    }
+    //}
 
     private void JumpEvent()
     {
@@ -113,17 +110,6 @@ public class PlayerAnimator : MonoBehaviour
 
     public void AnimatorBooleansHandle(PlayerStateManager player)
     {
-        #region IsOnFoot
-        if (player.state == player.slideState || player.state == player.inAirState || player.state == player.landingState)
-        {
-            playerAnimator.SetBool(IS_ON_FOOT, false);
-        }
-        else
-        {
-            playerAnimator.SetBool(IS_ON_FOOT, true);
-        }
-        #endregion
-
         #region IsCrouching
         if (player.state == player.crouchIdleState || player.state == player.crouchMoveState)
         {
@@ -135,25 +121,39 @@ public class PlayerAnimator : MonoBehaviour
         }
         #endregion
 
-        #region IsGrounded
-        if (player.state == player.inAirState || player.state == player.landingState)
+        #region IsStanding
+        if (player.state == player.idleState || player.state == player.walkState || player.state == player.runState)
         {
-            playerAnimator.SetBool(IS_GROUNDED, false);
+            playerAnimator.SetBool(IS_STANDING, true);
         }
         else
         {
-            playerAnimator.SetBool(IS_GROUNDED, true);
+            playerAnimator.SetBool(IS_STANDING, false);
+        }
+        #endregion
+
+        #region IsSliding
+            if (player.state == player.slideState)
+        {
+            playerAnimator.SetTrigger(IS_SLIDING);
+        }
+        #endregion
+
+        #region IsInAir
+        if (player.state == player.inAirState)
+        {
+            playerAnimator.SetBool(IS_IN_AIR, true);
+        }
+        else
+        {
+            playerAnimator.SetBool(IS_IN_AIR, false);
         }
         #endregion
 
         #region IsLanding
         if (player.state == player.landingState)
         {
-            playerAnimator.SetBool(IS_LANDING, true);
-        }
-        else
-        {
-            playerAnimator.SetBool(IS_LANDING, false);
+            playerAnimator.SetTrigger(IS_LANDING);
         }
         #endregion
 
@@ -162,15 +162,6 @@ public class PlayerAnimator : MonoBehaviour
         {
             playerAnimator.SetTrigger(JUMP_PERFORMED);
         }
-
-        #endregion
-
-        #region IsFastEnough
-        if (player.state == player.slideState)
-        {
-            playerAnimator.SetTrigger(IS_FAST_ENOUGH);
-        }
-
         #endregion
     }
 
