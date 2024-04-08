@@ -32,7 +32,11 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void OnUpdate(PlayerStateManager player)
     {
-        if (jumpInProgress) return;
+        if (jumpInProgress)
+        {
+            Debug.Log("State didn't change (Jump)");
+            return;
+        }
 
         float playerRadius = 0.2f;
         float landingGroundCheckDistance = 0.5f;
@@ -61,6 +65,6 @@ public class PlayerJumpState : PlayerBaseState
     public void OnJumpEnded(object sourse, EventArgs e)
     {
         jumpInProgress = false;
-        Debug.Log("Event worked");
+        Debug.Log("Event worked (Jump)");
     }
 }

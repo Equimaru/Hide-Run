@@ -70,6 +70,18 @@ public class PlayerMovementManager : MonoBehaviour
         {
             maxMovementSpeed = runSpeed;
         }
+        else if (player.state == player.crouchIdleState)
+        {
+            maxMovementSpeed = idleSpeed;
+        }
+        else if (player.state == player.crouchMoveState)
+        {
+            maxMovementSpeed = crouchSpeed;
+        }
+        else if (player.state == player.slideState)
+        {
+            maxMovementSpeed = runSpeed;
+        }
 
         Vector3 currentVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         float currentMovementSpeed = currentVelocity.magnitude;

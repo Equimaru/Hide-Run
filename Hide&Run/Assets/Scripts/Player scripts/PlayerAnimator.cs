@@ -30,8 +30,10 @@ public class PlayerAnimator : MonoBehaviour
     #endregion
 
     public delegate void JumpEndedEventHandler(object soure, EventArgs args);
+    public delegate void SlideEndedEventHandler(object soure, EventArgs args);
 
     public event JumpEndedEventHandler JumpEnded;
+    public event SlideEndedEventHandler SlideEnded;
 
     private void Start()
     {
@@ -96,6 +98,11 @@ public class PlayerAnimator : MonoBehaviour
         OnJumpEnded();
     }
 
+    void EndSlideEvent()
+    {
+        OnSlideEnded();
+    }
+
     public void AnimatorBooleansHandle(PlayerStateManager player)
     {
         #region IsOnFoot
@@ -110,7 +117,7 @@ public class PlayerAnimator : MonoBehaviour
         #endregion
 
         #region IsCrouching
-        if (player.state == player.crouchIdleState || player.state == player.crouchMoveState)
+        if (player.state == player.crouchIdleState || player.state == player.crouchMoveState || player.state == player.slideState)
         {
             playerAnimator.SetBool(IS_CROUCHING, true);
         }
@@ -147,7 +154,15 @@ public class PlayerAnimator : MonoBehaviour
         {
             playerAnimator.SetTrigger(JUMP_PERFORMED);
         }
-        
+
+        #endregion
+
+        #region IsFastEnough
+        if (player.state == player.slideState)
+        {
+            playerAnimator.SetTrigger(IS_FAST_ENOUGH);
+        }
+
         #endregion
     }
 
@@ -156,6 +171,14 @@ public class PlayerAnimator : MonoBehaviour
         if (JumpEnded != null)
         {
             JumpEnded(this, EventArgs.Empty);
+        }
+    }
+
+    protected virtual void OnSlideEnded()
+    {
+        if (SlideEnded != null)
+        {
+            SlideEnded(this, EventArgs.Empty);
         }
     }
 }
