@@ -5,17 +5,20 @@ using UnityEngine.EventSystems;
 
 public class PlayerMovementManager : MonoBehaviour
 {
+    #region Camera and rotation
     [SerializeField] private Transform freeLookCamera;
     private Vector3 cameraRelativeMoveDir;
     private float currentVelocity;
     private float smoothTime = 0.1f;
+    #endregion
 
     public float maxMovementSpeed;
     public float currentMovementSpeed,
         idleSpeed = 0,
         crouchSpeed = 2f,
         walkSpeed = 4f,
-        runSpeed = 7f;
+        runSpeed = 7f,
+        slideSpeed;
     public float movementSpeedAcceleration = 0.25f;
 
     private float jumpForce = 6f;
@@ -80,7 +83,7 @@ public class PlayerMovementManager : MonoBehaviour
         }
         else if (player.state == player.slideState)
         {
-            maxMovementSpeed = runSpeed;
+            maxMovementSpeed = slideSpeed;
         }
 
         Vector3 currentVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
@@ -109,5 +112,10 @@ public class PlayerMovementManager : MonoBehaviour
     public Vector3 GetCameraRelatedMovementDir()
     {
         return cameraRelativeMoveDir;
+    }
+
+    public void SetPlayerSlideVelocityMagnitude(float velocity)
+    {
+        slideSpeed = velocity;
     }
 }

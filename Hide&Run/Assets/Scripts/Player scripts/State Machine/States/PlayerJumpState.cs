@@ -55,11 +55,6 @@ public class PlayerJumpState : PlayerBaseState
         }
         #endregion
 
-        else
-        {
-            Debug.Log("State didn't change (Jump)");
-        }
-
     }
 
     public void OnJumpEnded(object sourse, EventArgs e)

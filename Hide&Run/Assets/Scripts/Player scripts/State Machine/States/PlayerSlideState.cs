@@ -20,11 +20,13 @@ public class PlayerSlideState : PlayerBaseState
         playerColliderManager.PlayerColliderAdjustment(player);
 
         playerMovementManager = player.GetComponent<PlayerMovementManager>();
+        playerMovementManager.SetPlayerSlideVelocityMagnitude(7f);
 
         playerAnimator = GameObject.Find("Player Visual").GetComponent<PlayerAnimator>();
         playerAnimator.AnimatorBooleansHandle(player);
 
         playerAnimator.SlideEnded += OnSlideEnded;
+        playerAnimator.GettingUpSlide += OnGettingUpSlide;
 
         slideInProgress = true;
         Debug.Log("Entered in Slide State");
@@ -34,6 +36,7 @@ public class PlayerSlideState : PlayerBaseState
     {
         if (slideInProgress)
         {
+            playerMovementManager.MovementHandler(player);
             Debug.Log("State didn't change (Slide)");
             return;
         }
@@ -45,13 +48,6 @@ public class PlayerSlideState : PlayerBaseState
         }
         #endregion
 
-        #region Switch to WalkState
-        else if (gameInput.GetInputVectorNormalized() != Vector2.zero && !gameInput.GetRunInput())
-        {
-            player.SwitchState(player.walkState);
-        }
-        #endregion
-
         #region Switch to RunState
         else if (gameInput.GetInputVectorNormalized() != Vector2.zero && gameInput.GetRunInput())
         {
@@ -59,15 +55,31 @@ public class PlayerSlideState : PlayerBaseState
         }
         #endregion
 
-        else
+        #region Switch to WalkState
+        else if (gameInput.GetInputVectorNormalized() != Vector2.zero)
         {
-            Debug.Log("State didn't change (Slide)");
+            player.SwitchState(player.walkState);
         }
+        #endregion
+
+        #region Switch to IdleState
+        else if (gameInput.GetInputVectorNormalized() == Vector2.zero)
+        {
+            player.SwitchState(player.idleState);
+        }
+        #endregion
     }
 
     public void OnSlideEnded(object sourse, EventArgs e)
     {
         slideInProgress = false;
         Debug.Log("Event worked (Slide)");
+    }
+
+    //Replace to MovementManager similar to all velocity changes
+    public void OnGettingUpSlide(object sourse, EventArgs e)
+    {
+        Debug.Log("Cyberbulling");
+        playerMovementManager.SetPlayerSlideVelocityMagnitude(2f);
     }
 }

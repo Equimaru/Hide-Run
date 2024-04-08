@@ -31,18 +31,21 @@ public class PlayerAnimator : MonoBehaviour
 
     public delegate void JumpEndedEventHandler(object soure, EventArgs args);
     public delegate void SlideEndedEventHandler(object soure, EventArgs args);
+    public delegate void GettingUpSlideEventHandler(object soure, EventArgs args);
 
     public event JumpEndedEventHandler JumpEnded;
     public event SlideEndedEventHandler SlideEnded;
+    public event GettingUpSlideEventHandler GettingUpSlide;
 
-    private void Start()
-    {
-        playerMovementManager = GameObject.Find("Player").GetComponent<PlayerMovementManager>();
-    }
     private void Awake()
     {
         playerSpeedForAnimation = 0;
         playerAccelerationForAnimation = 2f;
+    }
+
+    private void Start()
+    {
+        playerMovementManager = GameObject.Find("Player").GetComponent<PlayerMovementManager>();
     }
 
     private void FixedUpdate()
@@ -88,19 +91,24 @@ public class PlayerAnimator : MonoBehaviour
         }
     }
 
-    void JumpEvent()
+    private void JumpEvent()
     {
         playerMovementManager.CharacterJump();
     }
 
-    void EndJumpEvent()
+    private void EndJumpEvent()
     {
         OnJumpEnded();
     }
 
-    void EndSlideEvent()
+    private void EndSlideEvent()
     {
         OnSlideEnded();
+    }
+
+    private void GettingUpSlideEvent()
+    {
+        OnGettingUpSlide();
     }
 
     public void AnimatorBooleansHandle(PlayerStateManager player)
@@ -117,7 +125,7 @@ public class PlayerAnimator : MonoBehaviour
         #endregion
 
         #region IsCrouching
-        if (player.state == player.crouchIdleState || player.state == player.crouchMoveState || player.state == player.slideState)
+        if (player.state == player.crouchIdleState || player.state == player.crouchMoveState)
         {
             playerAnimator.SetBool(IS_CROUCHING, true);
         }
@@ -168,17 +176,16 @@ public class PlayerAnimator : MonoBehaviour
 
     protected virtual void OnJumpEnded()
     {
-        if (JumpEnded != null)
-        {
-            JumpEnded(this, EventArgs.Empty);
-        }
+        JumpEnded?.Invoke(this, EventArgs.Empty);
     }
 
     protected virtual void OnSlideEnded()
     {
-        if (SlideEnded != null)
-        {
-            SlideEnded(this, EventArgs.Empty);
-        }
+        SlideEnded?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected virtual void OnGettingUpSlide()
+    {
+        GettingUpSlide?.Invoke(this, EventArgs.Empty);
     }
 }
